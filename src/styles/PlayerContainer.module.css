@@ -1,0 +1,422 @@
+.barradeaccion {
+  width: 1525px;
+  height: 267px;
+  position: relative;
+  border-radius: var(--br-xl);
+  background-color: var(--color-gray);
+  display: none;
+  max-width: 100%;
+}
+
+.barradinamicadevidajugador,
+.barraestaticadevida {
+  height: 44px;
+  width: 277px;
+  position: relative;
+  border-radius: var(--br-6xl);
+  background-color: var(--color-white);
+  display: none;
+}
+
+.barradinamicadevidajugador {
+  height: 37px;
+  width: 269px;
+  background-color: var(--color-mediumseagreen-100);
+}
+
+.porcentajevidajugador {
+  position: relative;
+  font-size: var(--font-size-5xl);
+  display: inline-block;
+  font-family: var(--font-inria-sans);
+  color: var(--color-black);
+  text-align: left;
+  min-width: 56px;
+  z-index: 4;
+}
+
+.barradinamicadevidajugadorParent,
+.playerNameDisplay {
+  flex: 1;
+  border-radius: var(--br-6xl);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.barradinamicadevidajugadorParent {
+  cursor: pointer;
+  border: 0;
+  padding: var(--padding-9xs) var(--padding-xl);
+  background-color: var(--color-mediumseagreen-100);
+  justify-content: center;
+  z-index: 3;
+}
+
+.barradinamicadevidajugadorParent:hover,
+.enemyHealthDisplay:hover {
+  background-color: var(--color-mediumseagreen-200);
+}
+
+.playerNameDisplay {
+  background-color: var(--color-white);
+  justify-content: flex-start;
+  padding: var(--padding-10xs) var(--padding-9xs) var(--padding-9xs);
+  box-sizing: border-box;
+  min-width: 180px;
+  z-index: 2;
+}
+
+.nombrejugador {
+  position: relative;
+  z-index: 2;
+}
+
+.nombrejugadorWrapper,
+.playerName {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.nombrejugadorWrapper {
+  flex-direction: column;
+  padding: var(--padding-6xs) 0 0;
+}
+
+.playerName {
+  width: 437px;
+  flex-direction: row;
+  gap: var(--gap-2xl);
+  max-width: 100%;
+}
+
+.nombreenemigo {
+  position: relative;
+  z-index: 2;
+}
+
+.enemyName {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-6xs) 0 0;
+}
+
+.barradinamicadevidaenemigo,
+.barraestaticadevida1 {
+  height: 44px;
+  width: 277px;
+  position: relative;
+  border-radius: var(--br-6xl);
+  background-color: var(--color-white);
+  display: none;
+}
+
+.barradinamicadevidaenemigo {
+  height: 37px;
+  width: 269px;
+  background-color: var(--color-mediumseagreen-100);
+}
+
+.porcentajevidaenemigo {
+  position: relative;
+  font-size: var(--font-size-5xl);
+  display: inline-block;
+  font-family: var(--font-inria-sans);
+  color: var(--color-black);
+  text-align: left;
+  min-width: 56px;
+  z-index: 4;
+}
+
+.enemyHealthDisplay {
+  cursor: pointer;
+  border: 0;
+  padding: var(--padding-9xs) var(--padding-xl);
+  background-color: var(--color-mediumseagreen-100);
+  flex: 1;
+  border-radius: var(--br-6xl);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 3;
+}
+
+.enemyHealth,
+.enemyInfo,
+.playerInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.enemyHealth {
+  flex: 1;
+  border-radius: var(--br-6xl);
+  background-color: var(--color-white);
+  padding: var(--padding-10xs) var(--padding-9xs) var(--padding-9xs);
+  box-sizing: border-box;
+  min-width: 180px;
+  z-index: 2;
+}
+
+.enemyInfo,
+.playerInfo {
+  width: 463px;
+  gap: var(--gap-mid);
+  max-width: 100%;
+}
+
+.playerInfo {
+  width: 1256px;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+}
+
+.indicadordeturno {
+  margin: 0;
+  position: relative;
+  font-size: inherit;
+  font-weight: 700;
+  font-family: inherit;
+  z-index: 2;
+}
+
+.turnIndicator {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 var(--padding-6xl) 0 var(--padding-xl);
+}
+
+.botonatacar {
+  height: 38px;
+width: 207px;
+font-size: 16px;
+font-weight: bold;
+position: relative;
+background-color: var(--color-gainsboro);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+display: block;
+cursor: pointer;
+border-radius: var(--br-xl);
+flex-direction: row;
+padding: var(--padding-6xs) var(--padding-32xl);
+z-index: 2;
+}
+
+.botonatacar:hover {
+  transform: scale(1.1); /* Escala el botón un 10% más grande */
+  box-shadow: 0 0 10px rgba(24, 193, 223, 0.8); /* Añade una sombra roja alrededor */
+  cursor: pointer; /* Cambia el cursor a una mano al pasar por encima */  }
+
+
+
+.attackSkillButtons {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.attackSkillLabels {
+  border-radius: var(--br-xl);
+  background-color: var(--color-gainsboro);
+  flex-direction: row;
+  padding: var(--padding-6xs) var(--padding-56xl);
+  z-index: 2;
+}
+
+.attackSkillButtons {
+  flex-direction: column;
+  padding: 0 var(--padding-mini) 0 0;
+}
+
+.botonhabilidades {
+height: 38px;
+width: 207px;
+font-size: 16px;
+font-weight: bold;
+position: relative;
+background-color: var(--color-gainsboro);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+display: block;
+cursor: pointer;
+border-radius: var(--br-xl);
+flex-direction: row;
+padding: var(--padding-6xs) var(--padding-32xl);
+z-index: 2;
+}
+
+.botonhabilidades:hover {
+  transform: scale(1.1); /* Escala el botón un 10% más grande */
+  box-shadow: 0 0 10px rgba(24, 193, 223, 0.8); /* Añade una sombra roja alrededor */
+  cursor: pointer; /* Cambia el cursor a una mano al pasar por encima */
+}
+
+.textobotonhabilidades {
+  position: relative;
+  display: inline-block;
+  min-width: 104px;
+  z-index: 3;
+}
+
+.attackSkillButtons1 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+
+
+.attackSkillButtons1 {
+  flex-direction: column;
+  padding: 0 var(--padding-mini) 0 0;
+}
+
+.botonitems {
+height: 38px;
+width: 207px;
+font-size: 16px;
+font-weight: bold;
+position: relative;
+background-color: var(--color-gainsboro);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+display: flex;
+cursor: pointer;
+border-radius: var(--br-xl);
+flex-direction: row;
+border-radius: var(--br-xl);
+  background-color: var(--color-gainsboro);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-6xs) var(--padding-58xl) var(--padding-6xs)
+    var(--padding-59xl);
+  z-index: 2;  z-index: 2;
+}
+
+.botonitems:hover {
+  transform: scale(1.1); /* Escala el botón un 10% más grande */
+  box-shadow: 0 0 10px rgba(24, 193, 223, 0.8); /* Añade una sombra roja alrededor */
+  cursor: pointer; /* Cambia el cursor a una mano al pasar por encima */
+}
+
+
+
+.cantidadpuntospoder {
+  position: relative;
+  z-index: 2;
+}
+
+.actionButtons,
+.powerPoints {
+  display: flex;
+  align-items: flex-start;
+}
+
+.powerPoints {
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: var(--padding-6xs) 0 0;
+  color: var(--color-white);
+}
+
+.actionButtons {
+  align-self: stretch;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+  font-size: var(--font-size-xl);
+  color: var(--color-black);
+}
+
+.gameActions,
+.playerContainer,
+.turnActions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+}
+
+.turnActions {
+  flex: 1;
+  flex-direction: column;
+  gap: var(--gap-mid);
+}
+
+.gameActions,
+.playerContainer {
+  width: 1256px;
+  flex-direction: row;
+  padding: 0 var(--padding-19xl) 0 var(--padding-16xl);
+  box-sizing: border-box;
+  font-size: var(--font-size-9xl);
+  color: var(--color-mediumseagreen-100);
+}
+
+.playerContainer {
+  width: 1525px;
+  border-radius: var(--br-xl);
+  background-color: var(--color-gray);
+  flex-direction: column;
+  align-items: center;
+  padding: var(--padding-20xl) var(--padding-xl) var(--padding-5xl)
+    var(--padding-8xl);
+  gap: var(--gap-52xl);
+  z-index: 1;
+  text-align: left;
+  font-size: var(--font-size-5xl);
+  color: var(--color-white);
+  font-family: var(--font-inria-sans);
+}
+
+@media screen and (max-width: 1050px) {
+  .actionButtons,
+  .playerInfo {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 725px) {
+  .playerContainer {
+    gap: var(--gap-16xl);
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .nombrejugador,
+  .porcentajevidajugador {
+    font-size: var(--font-size-lgi);
+  }
+  .playerName {
+    flex-wrap: wrap;
+  }
+  .nombreenemigo,
+  .porcentajevidaenemigo {
+    font-size: var(--font-size-lgi);
+  }
+  .enemyInfo {
+    flex-wrap: wrap;
+  }
+  .indicadordeturno {
+    font-size: var(--font-size-3xl);
+  }
+  .cantidadpuntospoder,
+  .itemsLabel,
+  .textobotonhabilidades {
+    font-size: var(--font-size-base);
+  }
+  .playerContainer {
+    gap: var(--gap-lg);
+  }
+}
+

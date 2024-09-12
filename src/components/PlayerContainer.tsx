@@ -1,260 +1,239 @@
-import React, { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import styles from "../styles/PlayerContainer.module.css";
+import Acciones from "../interfaces/Acciones";
+import Combatiente from "../interfaces/Combatiente";
+import batallaData from '../data/batalla.json';
+import combatienteData from '../data/combatiente.json';
+import accionesData from '../data/acciones.json';
 
-export type PlayerContainerType = {
-  className?: string;
+type PlayerContainerProps = {
   onActionMessage: (message: string) => void;
 };
 
-interface Item {
-  id: string;
-  name: string;
-  type: string;
-  effects: string;
-  droprate: number;
-}
+// IDs de combatientes
+const JUGADOR_ID = "64d3402d681948532712a45b";
+const ENEMIGO_ID = "64d3402d681948532712a45z";
 
-interface Skill {
-  id: string;
-  name: string;
-  powerCost: number;
-  type: string;
-}
-
-interface Hero {
-  id: string;
-  name: string;
-  type: string;
-  abilities: string[];
-  powerPoints: number;
-  powerPointsLeft: number;
-}
-
-const PlayerContainer: FunctionComponent<PlayerContainerType> = ({
-  className = "",
-  onActionMessage,
-}) => {
-  const [items, setItems] = useState<Item[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [filteredSkills, setFilteredSkills] = useState<Skill[]>([]);
-  const [showItems, setShowItems] = useState(false);
+const PlayerContainer: FunctionComponent<PlayerContainerProps> = ({ onActionMessage }) => {
+  const [jugador, setJugador] = useState<Combatiente | null>(null);
+  const [enemigo, setEnemigo] = useState<Combatiente | null>(null);
+  const [habilidades, setHabilidades] = useState<Acciones[]>([]);
   const [showSkills, setShowSkills] = useState(false);
-  const [hero, setHero] = useState<Hero | null>(null);
+  const [isJugadorTurn, setIsJugadorTurn] = useState(true);
 
   useEffect(() => {
-    const fetchHeroData = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/heroes");
-        const data: Hero = await response.json();
+    const jugadorData = combatienteData.find(c => c._id === JUGADOR_ID) || null;
+    const enemigoData = combatienteData.find(c => c._id === ENEMIGO_ID) || null;
 
-        console.log("Hero data:", data);
+    setJugador(jugadorData as Combatiente | null);
+    setEnemigo(enemigoData as Combatiente | null);
 
-        if (data.powerPoints && data.powerPointsLeft) {
-          setHero(data);
-        } else {
-          console.error("Datos de powerPoints no válidos:", data);
-          setHero({ ...data, powerPoints: 8, powerPointsLeft: 8 });
-        }
-      } catch (error) {
-        console.error("Error fetching hero data:", error);
-      }
-    };
-
-    fetchHeroData();
+    if (jugadorData) {
+      const habilidadesData = accionesData.filter(a => 
+        jugadorData.abilities.includes(a._id)
+      ).map(habilidad => ({
+        ...habilidad,
+        effects: Object.fromEntries(
+          Object.entries(habilidad.effects).filter(([_, value]) => value !== undefined)
+        )
+      }) as Acciones);
+  
+      setHabilidades(habilidadesData);
+    }
   }, []);
 
-  const handleItemsClick = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/items");
-      const data: Item[] = await response.json();
-      setItems(data);
-      setShowItems(true);
-      setShowSkills(false);
-    } catch (error) {
-      console.error("Error al obtener los items:", error);
+  const calcularDaño = (ataque: number, defensa: number) => {
+    return Math.max(0, ataque - defensa);
+  };
+
+  const handleAtaque = () => {
+    if (jugador && enemigo) {
+      const daño = calcularDaño(jugador.attack, enemigo.defense);
+      const nuevaVidaEnemigo = Math.max(0, enemigo.health - daño);
+      setEnemigo({ ...enemigo, health: nuevaVidaEnemigo });
+
+      onActionMessage(`¡${jugador.name} ha atacado!`);
+      setIsJugadorTurn(false);
+
+      setTimeout(() => {
+        handleTurnoEnemigo();
+      }, 1000);
     }
   };
 
-  const handleSkillsClick = async () => {
-    if (!hero) return;
+  const handleTurnoEnemigo = () => {
+    if (enemigo && jugador) {
+      const daño = calcularDaño(enemigo.attack, jugador.defense);
+      const nuevaVidaJugador = Math.max(0, jugador.health - daño);
+      setJugador({ ...jugador, health: nuevaVidaJugador });
 
-    try {
-      const response = await fetch("http://localhost:5000/abilities");
-      const data: Skill[] = await response.json();
-      const formattedSkills = data.map((skill: Skill) => ({
-        id: skill.id,
-        name: skill.name,
-        powerCost: skill.powerCost,
-        type: skill.type,
-      }));
-      setSkills(formattedSkills);
-
-      const filteredSkills = formattedSkills.filter(
-        (skill) => skill.type === hero.type
-      );
-      setFilteredSkills(filteredSkills);
-
-      setShowItems(false);
-      setShowSkills(true);
-    } catch (error) {
-      console.error("Error al obtener las habilidades:", error);
+      onActionMessage(`¡${enemigo.name} ha atacado!`);
+      setIsJugadorTurn(true);
     }
   };
 
-  const handleSkillSelect = (skill: Skill) => {
-    if (hero) {
-      if (hero.powerPointsLeft >= skill.powerCost) {
-        const updatedPowerPointsLeft = hero.powerPointsLeft - skill.powerCost;
-        setHero({ ...hero, powerPointsLeft: Math.max(updatedPowerPointsLeft, 0) });
-        onActionMessage(`¡Has utilizado ${skill.name}!`);
+  const aplicarEfectos = (habilidad: Acciones) => {
+    if (habilidad.effects && jugador) {
+      let updatedJugador = { ...jugador };
+      Object.keys(habilidad.effects).forEach(effect => {
+        switch (effect) {
+          case "increaseAttack":
+            updatedJugador.attack += habilidad.effects[effect];
+            break;
+          case "increaseDefense":
+            updatedJugador.defense += habilidad.effects[effect];
+            break;
+          // Se pueden añadir más efectos aquí en el futuro
+        }
+      });
+      setJugador(updatedJugador);
+    }
+  };
+
+  const handleSkillSelect = (habilidad: Acciones) => {
+    if (jugador) {
+      if (jugador.powerPointsLeft >= habilidad.powerCost) {
+        const updatedPowerPointsLeft = jugador.powerPointsLeft - habilidad.powerCost;
+        setJugador({ ...jugador, powerPointsLeft: Math.max(updatedPowerPointsLeft, 0) });
+        onActionMessage(`¡${jugador.name} ha utilizado ${habilidad.name}!`);
+        aplicarEfectos(habilidad);
+
+        if (updatedPowerPointsLeft <= 0) {
+          onActionMessage("¡Ya no te quedan puntos de poder!");
+        }
+
+        setShowSkills(false);
+        setIsJugadorTurn(false);
+
+        setTimeout(() => {
+          handleTurnoEnemigo();
+        }, 1000);
       } else {
         onActionMessage("¡No tienes suficientes puntos de poder!");
       }
     }
   };
 
-  const handleItemSelect = async (itemId: string) => {
-    try {
-      await fetch(`http://localhost:5000/items/${itemId}`, { method: "DELETE" });
-      const updatedItems = items.filter((item) => item.id !== itemId);
-      setItems(updatedItems);
-    } catch (error) {
-      console.error("Error al eliminar el item:", error);
+  const handleSkillsClick = () => {
+    setShowSkills(!showSkills);
+  };
+
+  const getBarraVidaStyle = (health: number, maxHealth: number) => {
+    const porcentajeVida = (health / maxHealth) * 100;
+    if (porcentajeVida <= 30) {
+      return { backgroundColor: 'red' };
+    } else if (porcentajeVida <= 60) {
+      return { backgroundColor: 'yellow' };
     }
+    return { backgroundColor: 'green' };
   };
 
-  const handleOutsideClick = () => {
-    setShowItems(false);
-    setShowSkills(false);
-  };
-
-  const handleAttackClick = () => {
-    onActionMessage("¡Has utilizado ataque básico!");
-  };
+  // Obtener las recompensas del primer objeto de batallaData
+  const rewards = batallaData.length > 0 ? batallaData[0].rewards : { experience: 0, gold: 0 };
 
   return (
-    <footer
-      className={`${styles.playerContainer} ${className}`}
-      onClick={handleOutsideClick}
-    >
+    <footer className={styles.playerContainer}>
       <div className={styles.barradeaccion} />
-      {showItems ? (
-        <div
-          className={styles.itemsList}
-          style={{ maxHeight: "114px", overflowY: "auto" }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ul style={{ fontSize: "16px" }}>
-            {items.map((item) => (
-              <li
-                key={item.id}
-                onClick={() => handleItemSelect(item.id)}
-                style={{ fontSize: "16px" }}
-              >
-                {item.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : showSkills ? (
-        <div
-          className={styles.skillsList}
-          style={{ maxHeight: "114px", overflowY: "auto" }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ul style={{ fontSize: "16px" }}>
-            {filteredSkills.length > 0 ? (
-              filteredSkills.map((skill) => (
-                <li
-                  key={skill.id}
-                  onClick={() => handleSkillSelect(skill)}
-                  style={{ fontSize: "16px" }}
-                >
-                  {skill.name}
-                </li>
-              ))
-            ) : (
-              <li>No skills available</li>
-            )}
-          </ul>
-        </div>
-      ) : (
         <div className={styles.playerInfo}>
           <div className={styles.playerName}>
             <div className={styles.playerNameDisplay}>
               <div className={styles.barraestaticadevida} />
               <button className={styles.barradinamicadevidajugadorParent}>
-                <div className={styles.barradinamicadevidajugador} />
-                <b className={styles.porcentajevidajugador}>100%</b>
+                <div
+                  className={styles.barradinamicadevidajugador}
+                  style={jugador ? getBarraVidaStyle(jugador.health, jugador.maxHealth) : {}}
+                />
+                <b className={styles.porcentajevidajugador}>
+                  {jugador ? `${Math.round((jugador.health / jugador.maxHealth) * 100)}%` : 'Cargando...'}
+                </b>
               </button>
             </div>
             <div className={styles.nombrejugadorWrapper}>
               <b className={styles.nombrejugador}>
-                {hero ? `${hero.name} lvl. 8` : 'Loading...'}
+                {jugador ? `${jugador.name} lvl. ${jugador.level}` : 'Cargando...'}
               </b>
             </div>
           </div>
           <div className={styles.enemyInfo}>
             <div className={styles.enemyName}>
-              <b className={styles.nombreenemigo}>DeltaNight lvl. 8</b>
+              <b className={styles.nombreenemigo}>
+                {enemigo ? `${enemigo.name} lvl. ${enemigo.level}` : 'Cargando...'}
+              </b>
             </div>
             <div className={styles.enemyHealth}>
               <div className={styles.barraestaticadevida1} />
               <button className={styles.enemyHealthDisplay}>
-                <div className={styles.barradinamicadevidaenemigo} />
-                <b className={styles.porcentajevidaenemigo}>100%</b>
+                <div
+                  className={styles.barradinamicadevidaenemigo}
+                  style={enemigo ? getBarraVidaStyle(enemigo.health, enemigo.maxHealth) : {}}
+                />
+                <b className={styles.porcentajevidaenemigo}>
+                  {enemigo ? `${Math.round((enemigo.health / enemigo.maxHealth) * 100)}%` : 'Cargando...'}
+                </b>
               </button>
             </div>
           </div>
         </div>
-      )}
-      <div className={styles.gameActions}>
-        <div className={styles.turnActions}>
-          <div className={styles.turnIndicator}>
-            <h3 className={styles.indicadordeturno}>¡Es tu turno!</h3>
-          </div>
-          <div className={styles.actionButtons}>
-            <div className={styles.attackSkillButtons}>
-              <button className={styles.botonatacar} onClick={handleAttackClick}>
-                Atacar
-              </button>
+        <div className={styles.gameActions}>
+          <div className={styles.turnActions}>
+            <div className={styles.turnIndicator}>
+              <h3 className={styles.indicadordeturno}>
+                {isJugadorTurn ? "¡Es tu turno!" : "¡Turno del enemigo!"}
+              </h3>
             </div>
-            <div className={styles.attackSkillButtons1}>
-              <div className={styles.botonhabilidadesParent}>
+            <div className={styles.actionButtons}>
+              <div className={styles.attackSkillButtons}>
                 <button
-                  className={styles.botonhabilidades}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSkillsClick();
-                  }}
-                  style={{ backgroundColor: showSkills ? "#91CB94" : "" }}
+                  className={styles.botonatacar}
+                  onClick={handleAtaque}
+                  disabled={!isJugadorTurn}
                 >
-                  Habilidades
+                  Atacar
                 </button>
               </div>
+              <div className={styles.attackSkillButtons1}>
+                <div className={styles.botonhabilidadesParent}>
+                  <button
+                    className={styles.botonhabilidades}
+                    onClick={handleSkillsClick}
+                    disabled={!isJugadorTurn || habilidades.length === 0}
+                    style={{ backgroundColor: showSkills ? "#91CB94" : "" }}
+                  >
+                    Acciones
+                  </button>
+                </div>
+              </div>
+              <div className={styles.powerPoints}>
+                {jugador && (
+                  <b className={styles.cantidadpuntospoder}>
+                    {jugador.powerPointsLeft} / {jugador.powerPoints} Puntos de Poder
+                  </b>
+                )}
+              </div>
             </div>
-            <div className={styles.itemsButton}>
-              <button
-                className={styles.botonitems}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleItemsClick();
-                }}
-                style={{ backgroundColor: showItems ? "#91CB94" : "" }}
-              >
-                Items
-              </button>
-            </div>
-            <div className={styles.powerPoints}>
-              {hero && (
-                <b className={styles.cantidadpuntospoder}>
-                  {hero.powerPointsLeft} / {hero.powerPoints} Puntos de Poder
-                </b>
-              )}
-            </div>
-          </div>
+            {showSkills && (
+              <div className={styles.skillsList} style={{ maxHeight: "114px", overflowY: "auto" }}>
+                <ul style={{ fontSize: "16px" }}>
+                  {habilidades.map((habilidad) => (
+                    <li
+                      key={habilidad._id}
+                      onClick={() => handleSkillSelect(habilidad)}
+                      style={{ fontSize: "16px" }}
+                    >
+                      {habilidad.name} ({habilidad.powerCost} PP)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
         </div>
-      </div>
+    </div>
+      {enemigo && enemigo.health <= 0 && (
+        <div className={styles.combatResult}>
+          <h2>¡Has ganado el combate!</h2>
+          <p>Recompensas: {`Experiencia: ${rewards.experience}, Oro: ${rewards.gold}`}</p>
+        </div>
+      )}
     </footer>
   );
 };

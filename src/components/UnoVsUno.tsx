@@ -5,6 +5,7 @@ import styles from "../styles/UnoVsUno.module.css";
 const UnoVsUno: FunctionComponent = () => {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
+  //Esta constante se encarga de presentar el mensaje de las accines hechas en pantalla
   const handleActionMessage = (message: string) => {
     setActionMessage(message);
 

@@ -1,0 +1,23 @@
+[
+    {
+        "_id": "64d3402d681948532712a466",
+        "name": "Shield Throw",
+        "heroType": "Tanque",
+        "minLevel": 5,
+        "powerCost": 2,
+        "effects": {
+          "increaseAttack": 2
+        }
+    },
+
+    {
+        "_id": "64d3402d681948532712a467",
+        "name": "Mano de piedra",
+        "heroType": "Tanque",
+        "minLevel": 5,
+        "powerCost": 4,
+        "effects": {
+          "increaseDefense": 12
+        }
+    }
+]

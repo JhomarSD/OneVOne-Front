@@ -1,0 +1,24 @@
+[
+    {
+        "_id": "64d3402d681948532712a471",
+        "username": "CaptainAmerica123",
+        "email": "captainamerica@avengers.com",
+        "password": "$2y$10$T6B4.H3Yk2OFj6t62Vq5e.Yk4a.P0O6q6.v8jVo5V6Y2b.6g0X.2",
+        "heroes": [
+          "64d3402d681948532712a45b",
+          "64d3402d681948532712a472"
+        ],
+        "credits": 10000
+    },
+
+    {
+        "_id": "64d3402d681948532712a472",
+        "username": "Silve123",
+        "email": "captainamerica@avengers.com",
+        "password": "$2y$10$T6B4.H3Yk2OFj6t62Vq5e.Yk4a.P0O6q6.v8jVo5V6Y2b.6g0X.2",
+        "heroes": [
+            "64d3402d681948532712a45z"
+        ],
+        "credits": 8000
+    }
+]
